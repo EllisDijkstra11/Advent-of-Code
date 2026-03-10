@@ -1,0 +1,99 @@
+from pathlib import Path
+from pprint import pprint
+
+def preprocess(input_lines: list[int]):
+    files = ["/"]
+    commands = input_lines.split("\n")
+    current_directory = ""
+    max_depth = 0
+    partial_commands = []
+
+    for command in commands:
+        partial_command = command.split(" ")
+        partial_commands.append(partial_command)
+
+    for partial_command in partial_commands:
+        if partial_command[0] == "$":
+            if partial_command[1] == "cd":
+                if partial_command[2] == "..":
+                    index -= 1
+                elif partial_command[2] == "/":
+                    index = 1
+                else:
+                    index += 1
+                if index > max_depth:
+                    max_depth = index
+    print("max_depth = " + max_depth)
+
+    index = [0] + [0] * max_depth
+    print(index)
+    current_depth = 1
+    for partial_command in partial_commands:
+        if partial_command[0] == "$":
+            if partial_command[1] == "cd":
+                if partial_command[2] == "..":
+                    index[current_depth] = -1
+                    current_depth -= 1
+                elif partial_command[2] == "/":
+                    index = [0] + [0] * max_depth
+                    current_depth = 1
+                else:
+                    index[current_depth] += 1
+                    current_depth += 1
+                    current_index = index.copy()
+                    while -1 in current_index:
+                        current_index.remove(-1)
+                    if current_depth == 1:
+                        files[index[0]].append([partial_command[2]])
+                    elif current_depth == 2:
+                        files[index[0]][index[1]].append([partial_command[2]])
+                    elif current_depth == 3:
+                        files[index[0]][index[1]].append([partial_command[2]])
+
+                    
+
+
+                    file_index = "[index]" * current_depth
+                    print(file_index)
+    print(files)
+    pass
+                        
+                        
+
+
+
+
+    for partial_command in partial_commands:
+        if partial_command[0] == "$":
+            if partial_command[1] == "cd":
+                index += 1
+                for file in files:
+                    if file == command[2]:
+                        current_directory = command[2]
+                current_index = index.copy()
+                while "0" in current_index:
+                    current_index.remove("0")
+
+            if partial_command[1] == "ls":
+                pass
+
+
+
+
+def first(string):
+    pass
+   
+
+def second(string):
+    for index in range(14, len(string)):
+        if len(set(string[index - 14:index])) == 14:
+            return index
+
+if __name__ == "__main__":
+    data_path_example = Path('2022/day07/example.txt')
+    data_path_input = Path('2022/day07/input.txt')
+    example_data = data_path_example.read_text()
+    data = data_path_input.read_text()
+    print(first(preprocess(example_data)))
+    #print(second(preprocess(data)))
+    

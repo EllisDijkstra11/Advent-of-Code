@@ -1,0 +1,100 @@
+from pathlib import Path
+from pprint import pprint
+import string
+
+def preprocess(input_lines: list[int]):
+    files = ["/"]
+    commands = input_lines.split("\n")
+    current_directory = ""
+    max_depth = 0
+    partial_commands = []
+
+    for command in commands:
+        partial_command = command.split(" ")
+        partial_commands.append(partial_command)
+
+    while ["$", "cd", ".."] in partial_commands:
+        partial_commands.remove(["$", "cd", ".."])
+
+    while ["$", "cd", "\\"] in partial_commands:
+        partial_commands.remove(["$", "cd", "\\"])
+    all_sums = []
+
+    partial_command = partial_commands.copy()
+    changed = False
+    no_dir = True
+
+    # As long as there are still movements to directories, not all the directories have been summed
+    while ["$", "ls"] in partial_command:
+        for index in range(len(partial_commands)):  # Check single lines
+            changed = False  # No changes have been made to partial_command yet
+
+            #print("ls?", partial_commands[index])
+            if partial_commands[index][1] == "ls" and not changed:  # If the command is a ls
+                no_dir = True  # No directories have been found in this list
+                #print("entered zeroed")
+                #print(partial_commands[index][1], partial_commands[index + 1][0])
+
+                file_index = index + 1  # Look at the files in this list
+                while no_dir and file_index < len(partial_commands) - 1 and partial_commands[file_index][0] != "$":
+                    print("entered first")
+                    if partial_commands[index + 1][0] == "dir":
+                        #print("entered false")
+                        no_dir = False
+                    file_index += 1
+
+                file_index = index + 1
+                directory_sum = 0
+                if no_dir and file_index < len(partial_commands) - 1 and partial_commands[file_index][0] != "$":
+                    changed = True
+
+                    while file_index < len(partial_commands) and partial_commands[file_index][0] != "$":
+                        #print("entered second")
+
+                        #print(partial_commands[file_index][0])
+                        directory_sum += int(partial_commands[file_index][0])
+                        print(partial_commands[index])                    
+                        print("first remove")                        
+                        pprint(partial_command)
+                        partial_command.remove(partial_commands[index])
+                        pprint(partial_command)
+                        file_index += 1
+                    #print("directory sum", directory_sum)
+
+                    all_sums.append(directory_sum)
+                    #print("sums", all_sums)
+                    for command_index in range(len(partial_command) - 1):
+                        #print(partial_commands[index-1], partial_command[command_index])
+                        print("replace ", partial_commands[index - 1][2], partial_command[command_index][1])
+                        if partial_commands[index - 1][2] == partial_command[command_index][1]:
+                            #print("Yes", command_index)
+                            print(partial_command)
+                            partial_command[command_index] = [str(directory_sum), ""]
+                            print("")
+                            print(partial_command)
+        partial_commands = partial_command.copy()
+        #print(all_sums)
+        #print(partial_command, partial_commands)
+
+                    
+    print("finished", all_sums)
+    pass
+                        
+
+def first(string):
+    pass
+   
+
+def second(string):
+    for index in range(14, len(string)):
+        if len(set(string[index - 14:index])) == 14:
+            return index
+
+if __name__ == "__main__":
+    data_path_example = Path('2022/day07/example.txt')
+    data_path_input = Path('2022/day07/input.txt')
+    example_data = data_path_example.read_text()
+    data = data_path_input.read_text()
+    print(first(preprocess(example_data)))
+    #print(second(preprocess(data)))
+    
